@@ -32,7 +32,7 @@ jobs:
 
     - uses: azure/k8s-create-secret@v1
       with:
-        namespace: rbnamespace1
+        namespace: hello
         container-registry-url: rbacr.azurecr.io
         container-registry-username: ${{ secrets.acr_rbacr_username }}
         container-registry-password: ${{ secrets.acr_rbacr_password }}
@@ -40,7 +40,7 @@ jobs:
        
     - uses: azure/k8s-deploy@v1.2
       with:
-        namespace: rbnamespace1
+        namespace: hello
         manifests: |
           yaml/hello-kubernetes.yaml
         images: |
