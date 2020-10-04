@@ -26,6 +26,6 @@ spec:
     spec:
       containers:
       - name: hello-kubernetes
-        image: rbacr.azurecr.io/rbpetest
+        image: paulbouwer/hello-kubernetes:1.8
         ports:
         - containerPort: 8080
