@@ -1,0 +1,49 @@
+on: [push]
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    
+    - uses: azure/docker-login@v1
+      with:
+        login-server: rbacr.azurecr.io
+        username: ${{ secrets.acr_rbacr_username }}
+        password: ${{ secrets.acr_rbacr_password }}
+    
+    - name: Build and push image to ACR
+      id: build-image
+      run: |
+        docker build "$GITHUB_WORKSPACE/.devcontainer" -f  ".devcontainer/Dockerfile" -t rbacr.azurecr.io/rbpetest:${{ github.sha }}
+        docker push rbacr.azurecr.io/rbpetest:${{ github.sha }}
+    
+    - uses: azure/k8s-set-context@v1
+      with:
+         kubeconfig: ${{ secrets.aks_rbk8s_kubeConfig }}
+      id: login
+    
+    - name: Create namespace
+      run: |
+        namespacePresent=`kubectl get namespace | grep hello | wc -l`
+        if [ $namespacePresent -eq 0 ]
+        then
+            echo `kubectl create namespace hello`
+        fi
+
+    - uses: azure/k8s-create-secret@v1
+      with:
+        namespace: rbnamespace1
+        container-registry-url: rbacr.azurecr.io
+        container-registry-username: ${{ secrets.acr_rbacr_username }}
+        container-registry-password: ${{ secrets.acr_rbacr_password }}
+        secret-name: rbk8stestdockerauth
+       
+    - uses: azure/k8s-deploy@v1.2
+      with:
+        namespace: rbnamespace1
+        manifests: |
+          yaml/hello-kubernetes.yaml
+        images: |
+          rbacr.azurecr.io/rbpetest:${{ github.sha }}
+        imagepullsecrets: |
+          rbk8stestdockerauth
