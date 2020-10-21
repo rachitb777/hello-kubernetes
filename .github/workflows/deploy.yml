@@ -7,15 +7,15 @@ jobs:
     
     - uses: azure/docker-login@v1
       with:
-        login-server: rbacr.azurecr.io
+        login-server: rbacr001.azurecr.io
         username: ${{ secrets.acr_rbacr_username }}
         password: ${{ secrets.acr_rbacr_password }}
     
     - name: Build and push image to ACR
       id: build-image
       run: |
-        docker build "$GITHUB_WORKSPACE/.devcontainer" -f  ".devcontainer/Dockerfile" -t rbacr.azurecr.io/rbpetest:${{ github.sha }}
-        docker push rbacr.azurecr.io/rbpetest:${{ github.sha }}
+        docker build "$GITHUB_WORKSPACE/.devcontainer" -f  ".devcontainer/Dockerfile" -t rbacr001.azurecr.io/rbpetest:${{ github.sha }}
+        docker push rbacr001.azurecr.io/rbpetest:${{ github.sha }}
     
     - uses: azure/k8s-set-context@v1
       with:
@@ -33,7 +33,7 @@ jobs:
     - uses: azure/k8s-create-secret@v1
       with:
         namespace: hello
-        container-registry-url: rbacr.azurecr.io
+        container-registry-url: rbacr001.azurecr.io
         container-registry-username: ${{ secrets.acr_rbacr_username }}
         container-registry-password: ${{ secrets.acr_rbacr_password }}
         secret-name: rbk8stestdockerauth
@@ -44,6 +44,6 @@ jobs:
         manifests: |
           yaml/hello-kubernetes.yaml
         images: |
-          rbacr.azurecr.io/rbpetest:${{ github.sha }}
+          rbacr001.azurecr.io/rbpetest:${{ github.sha }}
         imagepullsecrets: |
           rbk8stestdockerauth
