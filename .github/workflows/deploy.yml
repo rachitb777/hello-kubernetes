@@ -10,7 +10,7 @@ jobs:
         namespacePresent=`kubectl get namespace | grep hello | wc -l`
         if [ $namespacePresent -eq 0 ]
         then
-            echo `kubectl create namespace hello`
+            echo `kubectl create namespace hello-new`
         fi
         
     - uses: azure/k8s-set-context@v1
@@ -20,7 +20,7 @@ jobs:
 
     - uses: azure/k8s-create-secret@v1
       with:
-        namespace: hello
+        namespace: hello-new
         container-registry-url: rbacr001.azurecr.io
         container-registry-username: ${{ secrets.acr_rbacr_username }}
         container-registry-password: ${{ secrets.acr_rbacr_password }}
@@ -28,7 +28,7 @@ jobs:
        
     - uses: rachitb777/k8s-deploy@rbtrac1
       with:
-        namespace: hello
+        namespace: hello-new
         manifests: |
           yaml/hello-kubernetes.yaml
         images: |
