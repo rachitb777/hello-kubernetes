@@ -5,23 +5,6 @@ jobs:
     steps:
     - uses: actions/checkout@master
     
-    - uses: azure/docker-login@v1
-      with:
-        login-server: rbacr001.azurecr.io
-        username: ${{ secrets.acr_rbacr_username }}
-        password: ${{ secrets.acr_rbacr_password }}
-    
-    - name: Build and push image to ACR
-      id: build-image
-      run: |
-        docker build "$GITHUB_WORKSPACE/.devcontainer" -f  ".devcontainer/Dockerfile" -t rbacr001.azurecr.io/rbpetest:${{ github.sha }}
-        docker push rbacr001.azurecr.io/rbpetest:${{ github.sha }}
-    
-    - uses: azure/k8s-set-context@v1
-      with:
-         kubeconfig: ${{ secrets.aks_rbk8s_kubeConfig }}
-      id: login
-    
     - name: Create namespace
       run: |
         namespacePresent=`kubectl get namespace | grep hello | wc -l`
@@ -38,7 +21,7 @@ jobs:
         container-registry-password: ${{ secrets.acr_rbacr_password }}
         secret-name: rbk8stestdockerauth
        
-    - uses: rachitb777/k8s-deploy@repoId1
+    - uses: rachitb777/k8s-deploy@rbtrac1
       with:
         namespace: hello
         manifests: |
