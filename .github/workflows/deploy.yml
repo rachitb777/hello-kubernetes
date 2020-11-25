@@ -26,7 +26,7 @@ jobs:
         container-registry-password: ${{ secrets.acr_rbacr_password }}
         secret-name: rbk8stestdockerauth
        
-    - uses: rachitb777/k8s-deploy@rbtrac1
+    - uses: rachitb777/k8s-deploy@release/trac1
       with:
         namespace: hello-new
         manifests: |
